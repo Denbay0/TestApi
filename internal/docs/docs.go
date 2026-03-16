@@ -46,7 +46,35 @@ func OpenAPIYAML(cfg SpecConfig) []byte {
 func SwaggerUI() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		_, _ = w.Write([]byte(`<!doctype html><html><head><title>Edge API Docs</title><link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css"></head><body><div id="swagger-ui"></div><script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script><script>window.ui = SwaggerUIBundle({url:'/openapi.json',dom_id:'#swagger-ui'});</script></body></html>`))
+		_, _ = w.Write([]byte(`<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edge API Docs</title>
+  <style>
+    body{font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:24px auto;padding:0 16px;line-height:1.5}
+    h1{margin-bottom:8px}
+    .links{margin-bottom:16px}
+    a{margin-right:16px}
+    pre{background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;overflow:auto}
+  </style>
+</head>
+<body>
+  <h1>Edge API Docs</h1>
+  <div class="links">
+    <a href="/openapi.json" target="_blank" rel="noopener">openapi.json</a>
+    <a href="/openapi.yaml" target="_blank" rel="noopener">openapi.yaml</a>
+  </div>
+  <pre id="spec">Loading /openapi.json ...</pre>
+  <script>
+    fetch('/openapi.json')
+      .then(function(res){ if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); })
+      .then(function(spec){ document.getElementById('spec').textContent = JSON.stringify(spec, null, 2); })
+      .catch(function(err){ document.getElementById('spec').textContent = 'Failed to load /openapi.json: ' + err.message; });
+  </script>
+</body>
+</html>`))
 	}
 }
 

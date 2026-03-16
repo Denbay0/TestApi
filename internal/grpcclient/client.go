@@ -17,14 +17,14 @@ type ClientSet struct {
 	conns        []*grpc.ClientConn
 }
 
-type dialConfig struct {
+type DialConfig struct {
 	Identity     string
 	EventCommand string
 	EventQuery   string
 	Report       string
 }
 
-func New(ctx context.Context, cfg dialConfig) (*ClientSet, error) {
+func New(ctx context.Context, cfg DialConfig) (*ClientSet, error) {
 	identityConn, err := dial(ctx, cfg.Identity)
 	if err != nil {
 		return nil, fmt.Errorf("dial identity: %w", err)

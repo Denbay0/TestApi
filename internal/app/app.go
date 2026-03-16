@@ -27,12 +27,7 @@ type App struct {
 }
 
 func New(ctx context.Context, cfg config.Config, logger *slog.Logger) (*App, error) {
-	clients, err := grpcclient.New(ctx, struct {
-		Identity     string
-		EventCommand string
-		EventQuery   string
-		Report       string
-	}{
+	clients, err := grpcclient.New(ctx, grpcclient.DialConfig{
 		Identity:     cfg.IdentityServiceURL,
 		EventCommand: cfg.EventCommandServiceURL,
 		EventQuery:   cfg.EventQueryServiceURL,
@@ -95,10 +90,24 @@ func New(ctx context.Context, cfg config.Config, logger *slog.Logger) (*App, err
 	metrics.Get("/health", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) })
 
 	return &App{
-		HTTPServer:    &http.Server{Addr: fmt.Sprintf(":%s", cfg.Port), Handler: r, ReadHeaderTimeout: 5 * time.Second},
-		MetricsServer: &http.Server{Addr: fmt.Sprintf(":%s", cfg.MetricsPort), Handler: metrics, ReadHeaderTimeout: 5 * time.Second},
-		grpcClients:   clients,
-		logger:        logger,
+		HTTPServer: &http.Server{
+			Addr:              fmt.Sprintf(":%s", cfg.Port),
+			Handler:           r,
+			ReadHeaderTimeout: 5 * time.Second,
+			ReadTimeout:       10 * time.Second,
+			WriteTimeout:      15 * time.Second,
+			IdleTimeout:       60 * time.Second,
+		},
+		MetricsServer: &http.Server{
+			Addr:              fmt.Sprintf(":%s", cfg.MetricsPort),
+			Handler:           metrics,
+			ReadHeaderTimeout: 5 * time.Second,
+			ReadTimeout:       10 * time.Second,
+			WriteTimeout:      15 * time.Second,
+			IdleTimeout:       60 * time.Second,
+		},
+		grpcClients: clients,
+		logger:      logger,
 	}, nil
 }
 
