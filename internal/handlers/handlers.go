@@ -34,18 +34,38 @@ func (h *Handler) CSRF(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
+	requestID := middleware.RequestIDFromContext(r.Context())
 	var input grpcclient.RegisterParams
-	_ = json.NewDecoder(r.Body).Decode(&input)
-	session, _ := h.GRPC.Identity.Register(r.Context(), middleware.RequestIDFromContext(r.Context()), input)
-	auth.SetAuthCookie(w, session.Token, h.CookieCfg)
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		response.Error(w, http.StatusBadRequest, "invalid_json", "invalid json body", requestID)
+		return
+	}
+	session, err := h.GRPC.Identity.Register(r.Context(), requestID, input)
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "upstream_error", "upstream service error", requestID)
+		return
+	}
+	if session != nil {
+		auth.SetAuthCookie(w, session.Token, h.CookieCfg)
+	}
 	response.JSON(w, http.StatusCreated, map[string]any{"session": session, "todo": "wire register"})
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+	requestID := middleware.RequestIDFromContext(r.Context())
 	var input grpcclient.LoginParams
-	_ = json.NewDecoder(r.Body).Decode(&input)
-	session, _ := h.GRPC.Identity.Login(r.Context(), middleware.RequestIDFromContext(r.Context()), input)
-	auth.SetAuthCookie(w, session.Token, h.CookieCfg)
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		response.Error(w, http.StatusBadRequest, "invalid_json", "invalid json body", requestID)
+		return
+	}
+	session, err := h.GRPC.Identity.Login(r.Context(), requestID, input)
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "upstream_error", "upstream service error", requestID)
+		return
+	}
+	if session != nil {
+		auth.SetAuthCookie(w, session.Token, h.CookieCfg)
+	}
 	response.JSON(w, http.StatusOK, map[string]any{"session": session, "todo": "wire login"})
 }
 
@@ -56,50 +76,97 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Me(w http.ResponseWriter, r *http.Request) {
-	data, _ := h.GRPC.Identity.Me(r.Context(), middleware.RequestIDFromContext(r.Context()))
+	requestID := middleware.RequestIDFromContext(r.Context())
+	data, err := h.GRPC.Identity.Me(r.Context(), requestID)
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "upstream_error", "upstream service error", requestID)
+		return
+	}
 	response.JSON(w, http.StatusOK, data)
 }
 
 func (h *Handler) Categories(w http.ResponseWriter, r *http.Request) {
-	data, _ := h.GRPC.EventQuery.Categories(r.Context(), middleware.RequestIDFromContext(r.Context()))
+	requestID := middleware.RequestIDFromContext(r.Context())
+	data, err := h.GRPC.EventQuery.Categories(r.Context(), requestID)
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "upstream_error", "upstream service error", requestID)
+		return
+	}
 	response.JSON(w, http.StatusOK, data)
 }
 
 func (h *Handler) Events(w http.ResponseWriter, r *http.Request) {
+	requestID := middleware.RequestIDFromContext(r.Context())
 	if r.Method == http.MethodGet {
-		data, _ := h.GRPC.EventQuery.Events(r.Context(), middleware.RequestIDFromContext(r.Context()))
+		data, err := h.GRPC.EventQuery.Events(r.Context(), requestID)
+		if err != nil {
+			response.Error(w, http.StatusBadGateway, "upstream_error", "upstream service error", requestID)
+			return
+		}
 		response.JSON(w, http.StatusOK, data)
 		return
 	}
 	var body map[string]any
-	_ = json.NewDecoder(r.Body).Decode(&body)
-	data, _ := h.GRPC.EventCommand.CreateEvent(r.Context(), middleware.RequestIDFromContext(r.Context()), body)
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		response.Error(w, http.StatusBadRequest, "invalid_json", "invalid json body", requestID)
+		return
+	}
+	data, err := h.GRPC.EventCommand.CreateEvent(r.Context(), requestID, body)
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "upstream_error", "upstream service error", requestID)
+		return
+	}
 	response.JSON(w, http.StatusCreated, data)
 }
 
 func (h *Handler) Calendar(w http.ResponseWriter, r *http.Request) {
-	data, _ := h.GRPC.EventQuery.Calendar(r.Context(), middleware.RequestIDFromContext(r.Context()))
+	requestID := middleware.RequestIDFromContext(r.Context())
+	data, err := h.GRPC.EventQuery.Calendar(r.Context(), requestID)
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "upstream_error", "upstream service error", requestID)
+		return
+	}
 	response.JSON(w, http.StatusOK, data)
 }
 
 func (h *Handler) Dashboard(w http.ResponseWriter, r *http.Request) {
-	data, _ := h.GRPC.EventQuery.Dashboard(r.Context(), middleware.RequestIDFromContext(r.Context()))
+	requestID := middleware.RequestIDFromContext(r.Context())
+	data, err := h.GRPC.EventQuery.Dashboard(r.Context(), requestID)
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "upstream_error", "upstream service error", requestID)
+		return
+	}
 	response.JSON(w, http.StatusOK, data)
 }
 
 func (h *Handler) ReportSummary(w http.ResponseWriter, r *http.Request) {
-	data, _ := h.GRPC.Report.Summary(r.Context(), middleware.RequestIDFromContext(r.Context()))
+	requestID := middleware.RequestIDFromContext(r.Context())
+	data, err := h.GRPC.Report.Summary(r.Context(), requestID)
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "upstream_error", "upstream service error", requestID)
+		return
+	}
 	response.JSON(w, http.StatusOK, data)
 }
 
 func (h *Handler) ReportByCategory(w http.ResponseWriter, r *http.Request) {
-	data, _ := h.GRPC.Report.ByCategory(r.Context(), middleware.RequestIDFromContext(r.Context()))
+	requestID := middleware.RequestIDFromContext(r.Context())
+	data, err := h.GRPC.Report.ByCategory(r.Context(), requestID)
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "upstream_error", "upstream service error", requestID)
+		return
+	}
 	response.JSON(w, http.StatusOK, data)
 }
 
 func (h *Handler) Settings(w http.ResponseWriter, r *http.Request) {
+	requestID := middleware.RequestIDFromContext(r.Context())
 	if r.Method == http.MethodGet {
-		data, _ := h.GRPC.EventQuery.Settings(r.Context(), middleware.RequestIDFromContext(r.Context()))
+		data, err := h.GRPC.EventQuery.Settings(r.Context(), requestID)
+		if err != nil {
+			response.Error(w, http.StatusBadGateway, "upstream_error", "upstream service error", requestID)
+			return
+		}
 		response.JSON(w, http.StatusOK, data)
 		return
 	}
@@ -107,6 +174,11 @@ func (h *Handler) Settings(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Exports(w http.ResponseWriter, r *http.Request) {
-	data, _ := h.GRPC.EventQuery.Exports(r.Context(), middleware.RequestIDFromContext(r.Context()))
+	requestID := middleware.RequestIDFromContext(r.Context())
+	data, err := h.GRPC.EventQuery.Exports(r.Context(), requestID)
+	if err != nil {
+		response.Error(w, http.StatusBadGateway, "upstream_error", "upstream service error", requestID)
+		return
+	}
 	response.JSON(w, http.StatusOK, data)
 }
