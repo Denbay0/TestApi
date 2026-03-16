@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  edge-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: edge-api
+    ports:
+      - "8080:8080"
+      - "9100:9100"
+    env_file:
+      - .env
+    environment:
+      # Use service names/aliases from your existing Rust stack network.
+      IDENTITY_SERVICE_URL: http://identity-svc:50051
+      EVENT_COMMAND_SERVICE_URL: http://event-command-svc:50052
+      EVENT_QUERY_SERVICE_URL: http://event-query-svc:50053
+      REPORT_SERVICE_URL: http://report-svc:50054
+    networks:
+      - rust-backend
+
+networks:
+  rust-backend:
+    external: true
+    # Create once: docker network create rust-backend

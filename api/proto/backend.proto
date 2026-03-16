@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package backend.v1;
+
+option go_package = "github.com/example/edge-api/gen/go/backend/v1;backendv1";
+
+message Empty {}
+
+message UserProfile {
+  string user_id = 1;
+  string email = 2;
+  string display_name = 3;
+}
+
+message Category {
+  string id = 1;
+  string name = 2;
+}
+
+message Event {
+  string id = 1;
+  string title = 2;
+  string category_id = 3;
+  string starts_at = 4;
+}
+
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+  string display_name = 3;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message AuthReply {
+  string session_token = 1;
+  UserProfile user = 2;
+}
+
+message MeReply {
+  UserProfile user = 1;
+}
+
+message CategoriesReply {
+  repeated Category categories = 1;
+}
+
+message EventsReply {
+  repeated Event events = 1;
+}
+
+message CreateEventRequest {
+  string title = 1;
+  string category_id = 2;
+  string starts_at = 3;
+}
+
+message CalendarReply {
+  repeated Event events = 1;
+}
+
+message DashboardReply {
+  string period = 1;
+  int32 total_events = 2;
+}
+
+message ReportSummaryReply {
+  int32 total_events = 1;
+  int32 total_categories = 2;
+}
+
+message ReportByCategoryItem {
+  string category_id = 1;
+  string category_name = 2;
+  int32 events_count = 3;
+}
+
+message ReportByCategoryReply {
+  repeated ReportByCategoryItem items = 1;
+}
+
+message SettingsReply {
+  string timezone = 1;
+  string locale = 2;
+}
+
+message UpdateSettingsRequest {
+  string timezone = 1;
+  string locale = 2;
+}
+
+message ExportsReply {
+  repeated string links = 1;
+}
+
+service IdentityService {
+  rpc Register(RegisterRequest) returns (AuthReply);
+  rpc Login(LoginRequest) returns (AuthReply);
+  rpc Me(Empty) returns (MeReply);
+}
+
+service EventCommandService {
+  rpc CreateEvent(CreateEventRequest) returns (Event);
+}
+
+service EventQueryService {
+  rpc Categories(Empty) returns (CategoriesReply);
+  rpc Events(Empty) returns (EventsReply);
+  rpc Calendar(Empty) returns (CalendarReply);
+  rpc Dashboard(Empty) returns (DashboardReply);
+  rpc Settings(Empty) returns (SettingsReply);
+  rpc Exports(Empty) returns (ExportsReply);
+}
+
+service ReportService {
+  rpc Summary(Empty) returns (ReportSummaryReply);
+  rpc ByCategory(Empty) returns (ReportByCategoryReply);
+}
