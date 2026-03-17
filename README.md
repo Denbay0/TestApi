@@ -1,78 +1,143 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&height=240&text=NeverNet%20Edge%20API&fontAlign=50&fontAlignY=40&color=0:081226,35:123A73,70:2F6BFF,100:8BE9FF&fontColor=EAF8FF&desc=Blue%20Unit%20%7C%20Go%20Gateway%20%7C%20gRPC%20Bridge&descAlignY=62&animation=fadeIn" width="100%" />
+<img src="https://capsule-render.vercel.app/api?type=waving&height=290&text=NEVERNET%20EDGE%20API&fontAlign=50&fontAlignY=38&desc=NERV%20BLUE%20INTERFACE%20%7C%20GO%20GATEWAY%20%7C%20RUST%20gRPC&descAlignY=60&color=0:040814,20:0B1630,45:123A73,70:2F6BFF,100:9BE7FF&fontColor=EAF8FF&animation=twinkling" width="100%" />
 
-# ❄️ NeverNet Edge API
+<br/>
+
+<img src="./assets/nerv-logo.jpg" width="110" alt="NERV logo" />
+
+# ❄️ NEVERNET EDGE API
+
+<p>
+  <img src="https://img.shields.io/badge/NERV-BLUE%20UNIT-0A84FF?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/STATUS-ONLINE-8BE9FF?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/SYNC%20RATE-STABLE-7DD3FC?style=for-the-badge" />
+</p>
 
 <p>
   <img src="https://img.shields.io/badge/Go-1.23+-00BFFF?style=for-the-badge&logo=go&logoColor=white" />
-  <img src="https://img.shields.io/badge/gRPC-Rust%20backend-2F6BFF?style=for-the-badge&logo=grpc&logoColor=white" />
-  <img src="https://img.shields.io/badge/Swagger-OpenAPI-38BDF8?style=for-the-badge&logo=swagger&logoColor=white" />
+  <img src="https://img.shields.io/badge/gRPC-Rust%20Bridge-2F6BFF?style=for-the-badge&logo=grpc&logoColor=white" />
+  <img src="https://img.shields.io/badge/OpenAPI-Swagger-38BDF8?style=for-the-badge&logo=swagger&logoColor=white" />
   <img src="https://img.shields.io/badge/Docker-Linux-0A84FF?style=for-the-badge&logo=docker&logoColor=white" />
   <img src="https://img.shields.io/badge/Router-chi-5BC0FF?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Status-ONLINE-8BE9FF?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Auth-Cookie%20%2B%20CSRF-74C0FC?style=for-the-badge" />
 </p>
 
-<img src="./assets/Ayanami.jpg" width="320" alt="Ayanami Rei" />
+<img src="./assets/Ayanami.jpg" width="360" alt="Ayanami Blue Interface" />
 
-> **Cold blue gateway between frontend and Rust microservices.**
-> Minimal. Fast. Dockerized. Swagger-ready.
+### `cold blue gateway between frontend and Rust microservices`
+
+**Minimal. Precise. Dockerized. Swagger-ready.**
 
 </div>
 
 ---
 
-## ✦ About
+## `SYSTEM // OVERVIEW`
 
-**NeverNet Edge API** is a Go-based HTTP gateway / BFF that communicates with Rust backend services over **gRPC**.
+**NeverNet Edge API** — это Go-based HTTP gateway / BFF, который общается с Rust backend-сервисами по **gRPC**  
+и держит внешний REST-контракт для фронта как замена `backend/apps/edge-api`.
 
-It is designed as a replacement for `backend/apps/edge-api` and exposes a stable REST interface for the frontend.
+Он нужен, чтобы:
+
+- принимать HTTP/JSON запросы от фронта
+- проксировать и агрегировать данные из Rust-сервисов
+- отдавать единый REST API
+- поднимать встроенный Swagger / OpenAPI
+- быстро деплоиться в Docker на Linux
 
 ---
 
-## ✦ Blue System State
+## `NERV // PRIMARY VISUAL`
+
+<div align="center">
+
+<img src="./assets/Ayanami.jpg" width="280" alt="Ayanami" />
+<img src="./assets/rei-panel.webp" width="280" alt="Rei Panel" />
+<img src="./assets/lilith.jpg" width="280" alt="Lilith" />
+
+</div>
+
+---
+
+## `MAGI // DECISION MATRIX`
+
+<table>
+<tr>
+<td width="33%" align="center">
+
+### **MELCHIOR**
+**Architecture**
+Clean gateway layer  
+Simple package layout  
+Fast local iteration
+
+</td>
+<td width="33%" align="center">
+
+### **BALTHASAR**
+**Operations**
+Dockerized runtime  
+Health endpoints  
+Env-based config
+
+</td>
+<td width="33%" align="center">
+
+### **CASPER**
+**Interface**
+Swagger docs  
+Stable REST contract  
+Hackathon-ready workflow
+
+</td>
+</tr>
+</table>
+
+---
+
+## `BLUE STATUS // LIVE TELEMETRY`
 
 ```text
-SYSTEM      :: ONLINE
-INTERFACE   :: BLUE
-TRANSPORT   :: HTTP <-> gRPC
-STATUS      :: STABLE
-MODE        :: EDGE API
-SYNC        :: READY
+SYSTEM        :: ONLINE
+UNIT COLOR    :: BLUE
+ROUTER        :: chi
+TRANSPORT     :: HTTP <-> gRPC
+UPSTREAM      :: Rust microservices
+DOCS          :: /docs
+OPENAPI       :: /openapi.json
+AUTH MODE     :: COOKIE + CSRF
+DEPLOY MODE   :: DOCKER
+SIGNAL        :: STABLE
 ```
 
 ---
 
-## ✦ Stack
+## `ENTRY PLUG // FEATURES`
 
-* **Go**
-* **chi** — HTTP router
-* **gRPC Go** — Rust service clients
-* **Swagger / OpenAPI**
-* **Docker**
-* **Env-based config**
-
----
-
-## ✦ Features
-
-* REST API gateway
-* gRPC bridge to Rust backend
-* health endpoints
-* Swagger / OpenAPI docs
-* CSRF + cookie auth flow
-* Docker-ready deploy
-* simple hackathon-friendly structure
+```text
+[✓] REST API gateway
+[✓] gRPC bridge to Rust backend
+[✓] Health / readiness endpoints
+[✓] Swagger / OpenAPI docs
+[✓] CSRF + cookie auth flow
+[✓] Docker-ready runtime
+[✓] Linux server deploy path
+[✓] Fast startup for hackathon work
+```
 
 ---
 
-## ✦ Project Structure
+## `STRUCTURE // INTERNAL MAP`
 
 ```text
 .
 ├── api/
 ├── assets/
-│   └── Ayanami.jpg
+│   ├── Ayanami.jpg
+│   ├── lilith.jpg
+│   ├── nerv-logo.jpg
+│   └── rei-panel.webp
 ├── cmd/
 │   └── edge-api/
 ├── gen/
@@ -99,7 +164,7 @@ SYNC        :: READY
 
 ---
 
-## ✦ Quick Start
+## `LCL // QUICK START`
 
 ### Clone
 
@@ -108,16 +173,14 @@ git clone https://github.com/Denbay0/TestApi.git
 cd TestApi
 ```
 
-### Create `.env`
+### Create env
 
-#### Linux / macOS
-
+**Linux / macOS**
 ```bash
 cp .env.example .env
 ```
 
-#### Windows PowerShell
-
+**Windows PowerShell**
 ```powershell
 Copy-Item .env.example .env -Force
 ```
@@ -134,24 +197,28 @@ go mod tidy
 go run ./cmd/edge-api
 ```
 
-Service will be available at:
+### Local endpoints
 
-* `http://localhost:8080`
-* `http://localhost:9100`
-
----
-
-## ✦ Swagger / OpenAPI
-
-After startup:
-
-* **Swagger UI** → `http://localhost:8080/docs`
-* **OpenAPI JSON** → `http://localhost:8080/openapi.json`
-* **OpenAPI YAML** → `http://localhost:8080/openapi.yaml`
+- `http://localhost:8080`
+- `http://localhost:9100`
 
 ---
 
-## ✦ Health Checks
+## `SEELE // OPENAPI ACCESS`
+
+<div align="center">
+
+| INTERFACE | URL |
+|-----------|-----|
+| **Swagger UI** | `http://localhost:8080/docs` |
+| **OpenAPI JSON** | `http://localhost:8080/openapi.json` |
+| **OpenAPI YAML** | `http://localhost:8080/openapi.yaml` |
+
+</div>
+
+---
+
+## `NERV // HEALTH CHECK`
 
 ```bash
 curl http://localhost:8080/health
@@ -161,29 +228,38 @@ curl http://localhost:9100/health
 
 ---
 
-## ✦ Docker
+## `DOGMA // VISUAL FEED`
 
-### Build image
+<div align="center">
+
+<img src="./assets/rei-panel.webp" width="420" alt="Rei Panel" />
+<img src="./assets/lilith.jpg" width="420" alt="Lilith" />
+
+</div>
+
+---
+
+## `DEPLOYMENT // DOCKER PROTOCOL`
+
+### Build
 
 ```bash
 docker build -t edge-api:test .
 ```
 
-### Run container
+### Run
 
 ```bash
 docker run --rm -p 8080:8080 -p 9100:9100 --env-file .env edge-api:test
 ```
 
----
-
-## ✦ Docker Compose
+### Compose
 
 ```bash
 docker compose -f docker-compose.local.yml up --build
 ```
 
-If an external network is required:
+### External network
 
 ```bash
 docker network create rust-backend
@@ -191,7 +267,7 @@ docker network create rust-backend
 
 ---
 
-## ✦ Environment Variables
+## `GENOME // ENV CONFIG`
 
 ```env
 PORT=8080
@@ -209,77 +285,108 @@ AUTH_COOKIE_SECURE=false
 
 ---
 
-## ✦ Main Endpoints
+## `COMMAND LIST // ENDPOINTS`
 
-### Auth
+<details>
+<summary><b>AUTH // EXPAND</b></summary>
 
-* `GET /api/auth/csrf`
-* `POST /api/auth/register`
-* `POST /api/auth/login`
-* `POST /api/auth/logout`
-* `GET /api/auth/me`
+<br/>
 
-### Data
+- `GET /api/auth/csrf`
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/me`
 
-* `GET /api/categories`
-* `GET /api/events`
-* `POST /api/events`
-* `GET /api/calendar`
-* `GET /api/dashboard`
-* `GET /api/reports/summary`
-* `GET /api/reports/by-category`
-* `GET /api/settings`
-* `PUT /api/settings`
-* `GET /api/exports`
+</details>
 
----
+<details>
+<summary><b>DATA // EXPAND</b></summary>
 
-## ✦ Git Policy
+<br/>
 
-Tracked:
+- `GET /api/categories`
+- `GET /api/events`
+- `POST /api/events`
+- `GET /api/calendar`
+- `GET /api/dashboard`
+- `GET /api/reports/summary`
+- `GET /api/reports/by-category`
+- `GET /api/settings`
+- `PUT /api/settings`
+- `GET /api/exports`
 
-* `go.mod`
-* `go.sum`
-* source code
-* docs
-* Docker files
-
-Ignored:
-
-* `.env`
-* `vendor/`
-* binaries like `*.exe`
-* local artifacts
+</details>
 
 ---
 
-## ✦ Development Notes
+## `MARDUK // TARGET PROFILE`
 
-This project is optimized for:
-
-* fast local iteration
-* Linux Docker runtime
-* simple deployment flow
-* easy integration with existing Rust backend
-
----
-
-## ✦ Roadmap
-
-* [ ] connect real protobuf/gRPC contracts
-* [ ] complete compatibility with Rust edge-api
-* [ ] add integration tests
-* [ ] harden auth/session flow
-* [ ] production deployment profile
+```text
+TARGET        :: Hackathon-ready gateway
+PRIORITY      :: Fast delivery
+DOC STATUS    :: Embedded Swagger
+RUNTIME       :: Linux container
+FAILURE MODE  :: Upstream unavailable
+RECOVERY      :: Replace stubs with real gRPC contracts
+```
 
 ---
 
-## ✦ Blue Interface Quote
+> [!WARNING]
+> Some upstream Rust service flows may still be stubbed or partially mocked.  
+> Replace placeholder behavior with real protobuf/gRPC integrations before production deployment.
 
-> *Silence in the transport. Precision in the gateway. Stability in the build.*
+---
+
+## `MAGI // VERDICT`
+
+- **MELCHIOR:** architecture acceptable
+- **BALTHASAR:** deployment stable
+- **CASPER:** proceed to synchronization
+
+---
+
+## `DOGMA // GIT POLICY`
+
+### tracked
+- `go.mod`
+- `go.sum`
+- source code
+- docs
+- Docker files
+- assets used by README
+
+### ignored
+- `.env`
+- `vendor/`
+- `*.exe`
+- temp/build artifacts
+
+---
+
+## `SYNC GRAPH // ROADMAP`
+
+```text
+PHASE 01 :: gateway bootstrap          [DONE]
+PHASE 02 :: docs / swagger             [DONE]
+PHASE 03 :: docker runtime             [DONE]
+PHASE 04 :: real protobuf integration  [PENDING]
+PHASE 05 :: auth hardening             [PENDING]
+PHASE 06 :: integration tests          [PENDING]
+PHASE 07 :: production profile         [PENDING]
+```
+
+---
+
+## `REI // BLUE QUOTE`
 
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&section=footer&height=160&color=0:081226,35:123A73,70:2F6BFF,100:8BE9FF" width="100%" />
+> _Silence in the transport._  
+> _Precision in the gateway._  
+> _Stability in the build._
+
+<img src="https://capsule-render.vercel.app/api?type=waving&section=footer&height=170&color=0:040814,20:0B1630,45:123A73,70:2F6BFF,100:9BE7FF" width="100%" />
 
 </div>
