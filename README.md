@@ -1,203 +1,285 @@
-# Edge API (Go)
+<div align="center">
 
-Production-oriented Go API gateway/BFF that is intended to become a drop-in HTTP replacement for `backend/apps/edge-api` from the existing Rust monorepo. It talks to existing backend services over gRPC and exposes a stable HTTP/JSON contract.
+<img src="https://capsule-render.vercel.app/api?type=waving&height=240&text=NeverNet%20Edge%20API&fontAlign=50&fontAlignY=40&color=0:081226,35:123A73,70:2F6BFF,100:8BE9FF&fontColor=EAF8FF&desc=Blue%20Unit%20%7C%20Go%20Gateway%20%7C%20gRPC%20Bridge&descAlignY=62&animation=fadeIn" width="100%" />
 
-> Assumption: exact Rust `.proto` contracts are not yet available in this repository, so this version includes scaffold proto + TODO wiring points for quick hackathon iteration.
+# ❄️ NeverNet Edge API
 
-## Project tree
+<p>
+  <img src="https://img.shields.io/badge/Go-1.23+-00BFFF?style=for-the-badge&logo=go&logoColor=white" />
+  <img src="https://img.shields.io/badge/gRPC-Rust%20backend-2F6BFF?style=for-the-badge&logo=grpc&logoColor=white" />
+  <img src="https://img.shields.io/badge/Swagger-OpenAPI-38BDF8?style=for-the-badge&logo=swagger&logoColor=white" />
+  <img src="https://img.shields.io/badge/Docker-Linux-0A84FF?style=for-the-badge&logo=docker&logoColor=white" />
+  <img src="https://img.shields.io/badge/Router-chi-5BC0FF?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Status-ONLINE-8BE9FF?style=for-the-badge" />
+</p>
+
+<img src="./assets/Ayanami.jpg" width="320" alt="Ayanami Rei" />
+
+> **Cold blue gateway between frontend and Rust microservices.**
+> Minimal. Fast. Dockerized. Swagger-ready.
+
+</div>
+
+---
+
+## ✦ About
+
+**NeverNet Edge API** is a Go-based HTTP gateway / BFF that communicates with Rust backend services over **gRPC**.
+
+It is designed as a replacement for `backend/apps/edge-api` and exposes a stable REST interface for the frontend.
+
+---
+
+## ✦ Blue System State
+
+```text
+SYSTEM      :: ONLINE
+INTERFACE   :: BLUE
+TRANSPORT   :: HTTP <-> gRPC
+STATUS      :: STABLE
+MODE        :: EDGE API
+SYNC        :: READY
+```
+
+---
+
+## ✦ Stack
+
+* **Go**
+* **chi** — HTTP router
+* **gRPC Go** — Rust service clients
+* **Swagger / OpenAPI**
+* **Docker**
+* **Env-based config**
+
+---
+
+## ✦ Features
+
+* REST API gateway
+* gRPC bridge to Rust backend
+* health endpoints
+* Swagger / OpenAPI docs
+* CSRF + cookie auth flow
+* Docker-ready deploy
+* simple hackathon-friendly structure
+
+---
+
+## ✦ Project Structure
 
 ```text
 .
+├── api/
+├── assets/
+│   └── Ayanami.jpg
+├── cmd/
+│   └── edge-api/
+├── gen/
+├── internal/
+│   ├── app/
+│   ├── config/
+│   ├── docs/
+│   ├── grpcclient/
+│   ├── handlers/
+│   ├── middleware/
+│   └── response/
+├── .dockerignore
 ├── .env.example
-├── Dockerfile
-├── Makefile
-├── README.md
-├── api
-│   └── proto
-│       └── backend.proto
+├── .gitignore
 ├── buf.gen.yaml
 ├── buf.yaml
-├── cmd
-│   └── edge-api
-│       └── main.go
 ├── docker-compose.local.yml
-├── gen
-│   └── go
-│       └── README.md
+├── Dockerfile
 ├── go.mod
-└── internal
-    ├── app
-    │   └── app.go
-    ├── auth
-    │   └── cookies.go
-    ├── config
-    │   └── config.go
-    ├── docs
-    │   └── docs.go
-    ├── grpcclient
-    │   ├── client.go
-    │   ├── event_command.go
-    │   ├── event_query.go
-    │   ├── identity.go
-    │   ├── report.go
-    │   └── target.go
-    ├── handlers
-    │   └── handlers.go
-    ├── middleware
-    │   ├── authcookie.go
-    │   ├── context.go
-    │   ├── csrf.go
-    │   ├── logging.go
-    │   └── requestid.go
-    └── response
-        └── response.go
+├── go.sum
+├── Makefile
+└── README.md
 ```
 
-## What this service includes
+---
 
-- HTTP server on `:8080` (configurable via env).
-- Chi router + middleware stack:
-  - request id
-  - recoverer
-  - real ip
-  - structured logging (`slog`)
-  - CORS
-  - CSRF validation for mutating methods
-  - auth cookie parsing
-- Health endpoints:
-  - `GET /health`
-  - `GET /healthz`
-- API contract envelope:
-  - success: `{ "data": ... }`
-  - error: `{ "error": { "code", "message", "request_id" } }`
-- Swagger/OpenAPI endpoints from the service itself:
-  - `GET /docs`
-  - `GET /openapi.json`
-  - `GET /openapi.yaml`
-- gRPC connection layer with target normalization (`host:port`, `http://host:port`, `https://host:port`).
-- Docker multi-stage build with static binary (`CGO_ENABLED=0`) and minimal Linux runtime image.
+## ✦ Quick Start
 
-## Requirements
+### Clone
 
-- Go 1.23+
-- Docker / Docker Compose
-- Buf + protoc plugins (for protobuf generation when real proto contracts are ready)
+```bash
+git clone https://github.com/Denbay0/TestApi.git
+cd TestApi
+```
 
-## Install dependencies
+### Create `.env`
+
+#### Linux / macOS
+
+```bash
+cp .env.example .env
+```
+
+#### Windows PowerShell
+
+```powershell
+Copy-Item .env.example .env -Force
+```
+
+### Install dependencies
 
 ```bash
 go mod tidy
 ```
 
-If you need local protobuf tooling:
+### Run locally
 
 ```bash
-go install github.com/bufbuild/buf/cmd/buf@latest
-go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+go run ./cmd/edge-api
 ```
 
-## Protobuf generation
+Service will be available at:
+
+* `http://localhost:8080`
+* `http://localhost:9100`
+
+---
+
+## ✦ Swagger / OpenAPI
+
+After startup:
+
+* **Swagger UI** → `http://localhost:8080/docs`
+* **OpenAPI JSON** → `http://localhost:8080/openapi.json`
+* **OpenAPI YAML** → `http://localhost:8080/openapi.yaml`
+
+---
+
+## ✦ Health Checks
 
 ```bash
-make proto
+curl http://localhost:8080/health
+curl http://localhost:8080/healthz
+curl http://localhost:9100/health
 ```
 
-This runs `buf generate` using `buf.gen.yaml`, outputs to `gen/go`.
+---
 
-## Local run
+## ✦ Docker
+
+### Build image
 
 ```bash
-cp .env.example .env
-make run
+docker build -t edge-api:test .
 ```
 
-Service endpoints:
-- API: `http://localhost:8080`
-- Metrics health: `http://localhost:9100/health`
-- Swagger UI: `http://localhost:8080/docs`
-
-## Docker run
-
-Build image:
+### Run container
 
 ```bash
-make docker
+docker run --rm -p 8080:8080 -p 9100:9100 --env-file .env edge-api:test
 ```
 
-Run compose integration:
+---
+
+## ✦ Docker Compose
 
 ```bash
-cp .env.example .env
 docker compose -f docker-compose.local.yml up --build
 ```
 
-## Environment variables
+If an external network is required:
 
-- `PORT=8080`
-- `METRICS_PORT=9100`
-- `REDIS_URL=redis://redis:6379`
-- `IDENTITY_SERVICE_URL=http://identity-svc:50051`
-- `EVENT_COMMAND_SERVICE_URL=http://event-command-svc:50052`
-- `EVENT_QUERY_SERVICE_URL=http://event-query-svc:50053`
-- `REPORT_SERVICE_URL=http://report-svc:50054`
-- `FRONTEND_ORIGINS=http://localhost:3000,http://localhost:5173`
-- `AUTH_COOKIE_SECURE=false`
-- `OPENAPI_SERVER_URL=http://localhost:8080`
+```bash
+docker network create rust-backend
+```
 
-## HTTP endpoints scaffolded
+---
 
-- `GET /api/auth/csrf`
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `POST /api/auth/logout`
-- `GET /api/auth/me`
-- `GET /api/categories`
-- `GET /api/events`
-- `POST /api/events`
-- `GET /api/calendar`
-- `GET /api/dashboard`
-- `GET /api/reports/summary`
-- `GET /api/reports/by-category`
-- `GET /api/settings`
-- `PUT /api/settings`
-- `GET /api/exports`
+## ✦ Environment Variables
 
-## CSRF/Auth behavior
+```env
+PORT=8080
+METRICS_PORT=9100
+REDIS_URL=redis://redis:6379
 
-- `GET /api/auth/csrf`: creates CSRF token cookie and returns token in JSON envelope.
-- Mutating methods (`POST`, `PUT`, `PATCH`, `DELETE`) require `X-CSRF-Token` equal to CSRF cookie value.
-- `register`/`login`: set auth cookie.
-- `logout`: clears auth and CSRF cookies.
-- Cookie secure flag comes from `AUTH_COOKIE_SECURE`.
+IDENTITY_SERVICE_URL=http://identity-svc:50051
+EVENT_COMMAND_SERVICE_URL=http://event-command-svc:50052
+EVENT_QUERY_SERVICE_URL=http://event-query-svc:50053
+REPORT_SERVICE_URL=http://report-svc:50054
 
-## How to connect to existing Rust backend
+FRONTEND_ORIGINS=http://localhost:3000,http://localhost:5173
+AUTH_COOKIE_SECURE=false
+```
 
-1. Ensure Rust services are running and reachable on Docker network.
-2. Configure `*_SERVICE_URL` env vars to those service aliases/ports.
-3. Keep this Go service on same network (`rust-backend` in compose example).
-4. Replace scaffold `.proto` in `api/proto` with real contracts from Rust monorepo.
-5. Run `make proto` and wire grpcclient TODO methods to generated clients.
+---
 
-## Linux server deployment switch plan
+## ✦ Main Endpoints
 
-1. Build Linux image in CI:
-   - `docker build -t registry/edge-api:<tag> .`
-2. Push image to registry.
-3. On Linux server update compose/k8s manifest image tag.
-4. Set production env (`AUTH_COOKIE_SECURE=true`, prod origins, internal service URLs).
-5. Roll out and verify:
-   - `/health`
-   - `/docs`
-   - key API smoke checks.
+### Auth
 
-## TODO for real integration
+* `GET /api/auth/csrf`
+* `POST /api/auth/register`
+* `POST /api/auth/login`
+* `POST /api/auth/logout`
+* `GET /api/auth/me`
 
-- Replace scaffold proto with real Rust backend `.proto` files.
-- Generate `gen/go` from real contracts.
-- Implement real grpc calls in `internal/grpcclient/*` (currently placeholder responses).
-- Map Rust domain errors into custom error envelope code/message catalog.
-- Add integration tests against running Rust services.
-- Add metrics/tracing (Prometheus + OpenTelemetry).
-- Add cookie/session hardening strategy and secret rotation.
-- Add CI pipeline for lint/test/build/docker/proto-breaking checks.
+### Data
+
+* `GET /api/categories`
+* `GET /api/events`
+* `POST /api/events`
+* `GET /api/calendar`
+* `GET /api/dashboard`
+* `GET /api/reports/summary`
+* `GET /api/reports/by-category`
+* `GET /api/settings`
+* `PUT /api/settings`
+* `GET /api/exports`
+
+---
+
+## ✦ Git Policy
+
+Tracked:
+
+* `go.mod`
+* `go.sum`
+* source code
+* docs
+* Docker files
+
+Ignored:
+
+* `.env`
+* `vendor/`
+* binaries like `*.exe`
+* local artifacts
+
+---
+
+## ✦ Development Notes
+
+This project is optimized for:
+
+* fast local iteration
+* Linux Docker runtime
+* simple deployment flow
+* easy integration with existing Rust backend
+
+---
+
+## ✦ Roadmap
+
+* [ ] connect real protobuf/gRPC contracts
+* [ ] complete compatibility with Rust edge-api
+* [ ] add integration tests
+* [ ] harden auth/session flow
+* [ ] production deployment profile
+
+---
+
+## ✦ Blue Interface Quote
+
+> *Silence in the transport. Precision in the gateway. Stability in the build.*
+
+<div align="center">
+
+<img src="https://capsule-render.vercel.app/api?type=waving&section=footer&height=160&color=0:081226,35:123A73,70:2F6BFF,100:8BE9FF" width="100%" />
+
+</div>

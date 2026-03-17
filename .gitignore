@@ -1,0 +1,76 @@
+# =========================
+# Go build artifacts
+# =========================
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.cover
+*.prof
+coverage.out
+coverage.html
+
+# Binary output folders
+bin/
+dist/
+build/
+tmp/
+vendor/
+
+# =========================
+# Env / secrets
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+*.pid
+*.seed
+
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# =========================
+# Docker / local junk
+# =========================
+docker-compose.override.yml
+*.tar
+*.zip
+
+# =========================
+# Test cache / tooling
+# =========================
+.coverprofile
+.gocache/
+.gomodcache/
+
+# =========================
+# Git / misc
+# =========================
+*.local
+*.bak
+*.swp
+*.swo
+
+# =========================
+# IMPORTANT:
+# vendor/ НЕ игнорим
+# go.sum НЕ игнорим
+# =========================
