@@ -1,18 +1,21 @@
-# syntax=docker/dockerfile:1.7
-
 FROM golang:1.23-alpine AS builder
 WORKDIR /src
 
-RUN apk add --no-cache ca-certificates git
+RUN apk add --no-cache ca-certificates
 
-COPY go.mod ./
-RUN go mod download
+COPY go.mod go.sum ./
+COPY vendor ./vendor
+COPY cmd ./cmd
+COPY internal ./internal
+COPY gen ./gen
 
-COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags='-s -w' -o /out/edge-api ./cmd/edge-api
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=vendor -trimpath -ldflags='-s -w' -o /out/edge-api ./cmd/edge-api
 
-FROM gcr.io/distroless/static-debian12:nonroot
+FROM alpine:3.20 AS runtime
 WORKDIR /app
+
+RUN apk add --no-cache ca-certificates
+
 COPY --from=builder /out/edge-api /app/edge-api
 
 EXPOSE 8080 9100

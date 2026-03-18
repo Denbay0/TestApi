@@ -122,10 +122,12 @@ cp .env.example .env
 Copy-Item .env.example .env -Force
 ```
 
-### Install dependencies
+### Prepare dependencies
 
 ```bash
 go mod tidy
+go mod vendor
+go build ./cmd/edge-api
 ```
 
 ### Run locally
@@ -149,6 +151,8 @@ After startup:
 * **OpenAPI JSON** → `http://localhost:8080/openapi.json`
 * **OpenAPI YAML** → `http://localhost:8080/openapi.yaml`
 
+The `/docs` page is fully self-contained and only fetches the local `/openapi.json`, so it remains available without internet access.
+
 ---
 
 ## ✦ Health Checks
@@ -162,6 +166,13 @@ curl http://localhost:9100/health
 ---
 
 ## ✦ Docker
+
+### Pull base images
+
+```bash
+docker pull golang:1.23-alpine
+docker pull alpine:3.20
+```
 
 ### Build image
 
