@@ -49,8 +49,14 @@ func New(ctx context.Context, cfg config.Config, logger *slog.Logger) (*App, err
 	r.Use(middleware.ParseAuthCookie())
 	r.Use(middleware.CSRFMiddleware())
 
+	r.Get("/", h.Root)
+	r.Head("/", h.Root)
+	r.Get("/favicon.ico", h.Favicon)
+	r.Head("/favicon.ico", h.Favicon)
 	r.Get("/health", h.Health)
+	r.Head("/health", h.Health)
 	r.Get("/healthz", h.Health)
+	r.Head("/healthz", h.Health)
 
 	r.Get("/openapi.json", func(w http.ResponseWriter, r *http.Request) {
 		b, err := docs.OpenAPIJSON(docs.SpecConfig{ServerURL: cfg.OpenAPIServerURL})
@@ -61,11 +67,22 @@ func New(ctx context.Context, cfg config.Config, logger *slog.Logger) (*App, err
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write(b)
 	})
+	r.Head("/openapi.json", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+	})
 	r.Get("/openapi.yaml", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/yaml")
 		_, _ = w.Write(docs.OpenAPIYAML(docs.SpecConfig{ServerURL: cfg.OpenAPIServerURL}))
 	})
-	r.Get("/docs", docs.SwaggerUI())
+	r.Head("/openapi.yaml", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/yaml")
+		w.WriteHeader(http.StatusOK)
+	})
+	r.Get("/docs", docs.UIHandler())
+	r.Head("/docs", docs.UIHandler())
+	r.Get("/docs/", docs.UIHandler())
+	r.Head("/docs/", docs.UIHandler())
 
 	r.Route("/api", func(api chi.Router) {
 		api.Get("/auth/csrf", h.CSRF)
