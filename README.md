@@ -141,6 +141,8 @@ Service will be available at:
 * `http://localhost:8080`
 * `http://localhost:9100`
 
+When you open `http://localhost:8080/` in a browser, the service now returns a small landing page with links to docs, OpenAPI artifacts, and health checks instead of a 404.
+
 ---
 
 ## ✦ Swagger / OpenAPI
@@ -151,9 +153,19 @@ After startup:
 * **OpenAPI JSON** → `http://localhost:8080/openapi.json`
 * **OpenAPI YAML** → `http://localhost:8080/openapi.yaml`
 
-The `/docs` page is fully self-contained and only fetches the local `/openapi.json`, so it remains available without internet access.
+The `/docs` page is fully self-contained, uses only assets served by the edge-api process itself, and fetches the local `/openapi.json`, so it remains available without internet access. The page groups endpoints by tags, shows request/response schemas and examples, documents cookie + CSRF security, and includes a built-in Try it out flow for interactive requests.
 
 ---
+
+
+Quick browser checks:
+
+* `http://localhost:8080/`
+* `http://localhost:8080/docs`
+* `http://localhost:8080/openapi.json`
+* `http://localhost:8080/openapi.yaml`
+* `http://localhost:8080/health`
+* `http://localhost:8080/healthz`
 
 ## ✦ Health Checks
 
@@ -186,7 +198,20 @@ docker build -t edge-api:test .
 docker run --rm -p 8080:8080 -p 9100:9100 --env-file .env edge-api:test
 ```
 
+After the container starts, open `/docs` in your browser or use the smoke-test commands below.
+
 ---
+
+## ✦ Quick Smoke Test
+
+```bash
+curl -i http://localhost:8080/
+curl -i http://localhost:8080/favicon.ico
+curl -i http://localhost:8080/health
+curl -i http://localhost:8080/healthz
+curl -i http://localhost:8080/openapi.json
+curl -i http://localhost:8080/openapi.yaml
+```
 
 ## ✦ Docker Compose
 
